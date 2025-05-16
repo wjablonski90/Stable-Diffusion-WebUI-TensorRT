@@ -122,14 +122,17 @@ def export_lora(
 def swap_sdpa(func):
     def wrapper(*args, **kwargs):
         swap_sdpa = hasattr(F, "scaled_dot_product_attention")
+        print('#### Exporter.swap_sdpa  hasattr(scaled_dot_product_attention) :: ' + str(hasattr(F, "scaled_dot_product_attention")))
         old_sdpa = (
             getattr(F, "scaled_dot_product_attention", None) if swap_sdpa else None
         )
-        if swap_sdpa:
-            delattr(F, "scaled_dot_product_attention")
-        ret = func(*args, **kwargs)
+        #if swap_sdpa:
+        #    delattr(F, "scaled_dot_product_attention")
+        #ret = func(*args, **kwargs)
         if swap_sdpa and old_sdpa:
+            delattr(F, "scaled_dot_product_attention")
             setattr(F, "scaled_dot_product_attention", old_sdpa)
+            ret = func(*args, **kwargs)
         return ret
 
     return wrapper
